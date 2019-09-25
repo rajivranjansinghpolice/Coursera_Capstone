@@ -1,2 +1,2 @@
 # Coursera_Capstone
-Applied Data science Capstone Moduel
+Applied Data science Capstone Model
