@@ -1,3 +1,3 @@
 # Coursera_Capstone
 Applied Data science Capstone Model
-This is the trial repository to test code of capstone notebook
+After any new code addition same will be committed to trail repository before commiting to master branch.
