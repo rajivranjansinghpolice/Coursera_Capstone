@@ -1,4 +1,4 @@
-### This notebook will be used for the Assignment of week 4 of capstone course for Applied Data Science on Coursera
+### This notebook will be used for the Assignment of week 5 of capstone course for Applied Data Science on Coursera
 
 ### Author: Rajiv Ranjan Singh
 
@@ -77,59 +77,59 @@ Using **dataset cleaning and feature engineering**, we shall compute the average
 
 ### 3.1.1 Toronto
 
-1. First of all crime data of Toronto was retrieved from <a href="https://services.arcgis.com/S9th0jAJ7bqgIRjw/arcgis/rest/services/Neighbourhood_MCI/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&outSR=4326&f=json">here.</a> in json format. First, json dataset was flattened and saved as pandas Dataframe. 
+   - First of all crime data of Toronto was retrieved from <a href="https://services.arcgis.com/S9th0jAJ7bqgIRjw/arcgis/rest/services/Neighbourhood_MCI/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&outSR=4326&f=json">here.</a> in json format. First, json dataset was flattened and saved as pandas Dataframe. 
 >![image](attachment:image.png)
 
-2. Then column names were cleaned and on following 8 columns were retained for further analysis.
+   - Then column names were cleaned and on following 8 columns were retained for further analysis.
 
-    - Neighbourhood 
-    - Assault_AVG
-    - AutoTheft_AVG
-    - BreakandEnter_AVG
-    - Robbery_AVG
-    - TheftOver_AVG
-    - Homicide_AVG
-    - Shape__Area
+        - Neighbourhood 
+        - Assault_AVG
+        - AutoTheft_AVG
+        - BreakandEnter_AVG
+        - Robbery_AVG
+        - TheftOver_AVG
+        - Homicide_AVG
+        - Shape__Area
  >![image.png](attachment:image.png)   
 
-3. It was observed that Homicide averages were 'NA' for some neighbourhoods where 0 homocides were recorded. hence 35 such values were accordingly replaced with 0 (int).
+   - It was observed that Homicide averages were 'NA' for some neighbourhoods where 0 homocides were recorded. hence 35 such values were accordingly replaced with 0 (int).
 
 >![image.png](attachment:image.png)
 
 The cleaned dataframe had 140 rows and 8 columns.
 
-4. Then latitudes and longitudes of each neighbourhood was fetched using **Geocoder** from **Geopy** package. It was observed that Nominatim geocoder was not able to give location data for all the neighbourhoods in tha dataset. After trials , it was observed that **Here** geocoder had best results among all the free geocoders enabled in Geopy. Further, in order to prevent blocking by "Here" api due to repeated calls **RateLimiter** library from Geopy was used. Using **'tqdm'** package and progress_apply function, a progress bar was used to monitor the geocoding of each neighbourhood.
+   - Then latitudes and longitudes of each neighbourhood was fetched using **Geocoder** from **Geopy** package. It was observed that Nominatim geocoder was not able to give location data for all the neighbourhoods in tha dataset. After trials , it was observed that **Here** geocoder had best results among all the free geocoders enabled in Geopy. Further, in order to prevent blocking by "Here" api due to repeated calls **RateLimiter** library from Geopy was used. Using **'tqdm'** package and progress_apply function, a progress bar was used to monitor the geocoding of each neighbourhood.
 
 >![image.png](attachment:image.png)
 
-5. Finally, rows with any possible non retrived locations were dropped and cleaned dtaframe had shape of 140 X 10.
+   - Finally, rows with any possible non retrived locations were dropped and cleaned dtaframe had shape of 140 X 10.
 
 ### 3.1.2 New York
 
-1. The crime data for New York was much harder to process. We used the data provided <a href="https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/historical-crime-data/seven-major-felony-offenses-by-precinct-2000-2018.xls">here. </a> This dataset provides a number of features including precinct id, major crimes from 2001-2018 IN EXCEL FILE FORMAT. As can be seen, columns contain yearwise crime figures ffrom 2000 to 2018 while crime heads are mentioned in successive rows for each precinct. Further, only every 7th row has valid precinct ID data and intermediate cells are 'NaN' due to inability to parse merged cells from xls file. 
+   - The crime data for New York was much harder to process. We used the data provided <a href="https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/historical-crime-data/seven-major-felony-offenses-by-precinct-2000-2018.xls">here. </a> This dataset provides a number of features including precinct id, major crimes from 2001-2018 IN EXCEL FILE FORMAT. As can be seen, columns contain yearwise crime figures ffrom 2000 to 2018 while crime heads are mentioned in successive rows for each precinct. Further, only every 7th row has valid precinct ID data and intermediate cells are 'NaN' due to inability to parse merged cells from xls file. 
 
 >![image.png](attachment:image.png)
 
-2. **Data Cleaning**: A lot of data cleaning was used to remove garbage data and get AVG of major crime heads for 2014-2018 for each precinct.
+   - **Data Cleaning**: A lot of data cleaning was used to remove garbage data and get AVG of major crime heads for 2014-2018 for each precinct.
 
 >![image.png](attachment:image.png)
 
-3. Finally Dataframe.pivot and renaming of columns was used to get the dataset in same order as Toronto crime data.
+   - Finally Dataframe.pivot and renaming of columns was used to get the dataset in same order as Toronto crime data.
 
 >![image.png](attachment:image.png)
 
-4. Since, neighbourhood wise crime data for new York was not available freely, precincts were treated as neighbourhoods. Retreving the location ( lat,long) for each precinct turned out to be difficult. The open dataset available as csv file <a href="https://data.cityofnewyork.us/api/views/kmub-vria/rows.csv?accessType=DOWNLOAD"> here.</a> It featured precinct ID, Shape_area, Shape_length and the all the locations forming the boundary geometry of each precinct. A custom function was defined to extract all the locations from boundary geometry and return the mean of latitudes and longitudes of all boundary points as the central latitude and longitude for precinct.
-
-
->![image.png](attachment:image.png)
-
-
-5. Finally some columns renaming and reorientation and merging with crime data of New York to get both Toronto and new York Datasets in same feature name and size.
+   - Since, neighbourhood wise crime data for new York was not available freely, precincts were treated as neighbourhoods. Retreving the location ( lat,long) for each precinct turned out to be difficult. The open dataset available as csv file <a href="https://data.cityofnewyork.us/api/views/kmub-vria/rows.csv?accessType=DOWNLOAD"> here.</a> It featured precinct ID, Shape_area, Shape_length and the all the locations forming the boundary geometry of each precinct. A custom function was defined to extract all the locations from boundary geometry and return the mean of latitudes and longitudes of all boundary points as the central latitude and longitude for precinct.
 
 
 >![image.png](attachment:image.png)
 
-6. Finally, the central latitude and longitude for each precinct area were converted to custom neighbourhood names by using **reverse geocoding** from **Here** geocoder in geopy. The custom neighbourhood names were cleaned using regex substition. 
+
+   - Finally some columns renaming and reorientation and merging with crime data of New York to get both Toronto and new York Datasets in same feature name and size.
+
+
+>![image.png](attachment:image.png)
+
+   - Finally, the central latitude and longitude for each precinct area were converted to custom neighbourhood names by using **reverse geocoding** from **Here** geocoder in geopy. The custom neighbourhood names were cleaned using regex substition. 
 
 >![image.png](attachment:image.png)
 
@@ -137,54 +137,54 @@ The cleaned dataframe had 140 rows and 8 columns.
 
 ### 3.2.1 Toronto
 
-1. Plot Toronto neighbourhoods on map using Nominatim and Folium
+- Plot Toronto neighbourhoods on map using Nominatim and Folium
 
 >![image.png](attachment:image.png)
 
 **The Toronto Neighbourhood Map**
 >![image.png](attachment:image.png)
 
-2. Similarly plot new York neighbourhoods using Folium and Nominatim
+   - Similarly plot new York neighbourhoods using Folium and Nominatim
 
 **The New York Neighbourhood Map**
 
 >![image.png](attachment:image.png)
 
-3. Explore First neighbourhood in Toronto by fetching 100 top venues within a radius of 500 m using **Foursquare** api.
+   - Explore First neighbourhood in Toronto by fetching 100 top venues within a radius of 500 m using **Foursquare** api.
 
 >![image.png](attachment:image.png)
 
-4. We can see that only 45 popular venues were returned by Foursquare for Yonge-St.Clair 
+   - We can see that only 45 popular venues were returned by Foursquare for Yonge-St.Clair 
 >![image.png](attachment:image.png)
 
-5. Define a custom function get_nearby_venues to get Venue, Venue Latitude,	Venue Longitude, Venue Category for each neighbourhood in Toronto Dataset. Apply the function to all rows of toronto dataset.
-
->![image.png](attachment:image.png)
-
-6. Check the number of venues returned for each neighbourhood and count the total number of categories of all venues in Toronto dataset. We can see that total 280 categories were returned for Toronto neighbourhood popular venues.
+   - Define a custom function get_nearby_venues to get Venue, Venue Latitude,	Venue Longitude, Venue Category for each neighbourhood in Toronto Dataset. Apply the function to all rows of toronto dataset.
 
 >![image.png](attachment:image.png)
 
-7. Plot the number of venues for each neighbourhood. We can that their is huge variation in number of venues for each neighbourhood of Toronto.
+   - Check the number of venues returned for each neighbourhood and count the total number of categories of all venues in Toronto dataset. We can see that total 280 categories were returned for Toronto neighbourhood popular venues.
 
 >![image.png](attachment:image.png)
 
-8. Converting venue category in numeric variable using One Hot Encoding( pandas dummy variables) and then grouping cateogry-wise total venues for each neighbourhood. Then this venue dataframe would be merged with crime dataset to get final dataframe ready for clustering and analysis.
+- Plot the number of venues for each neighbourhood. We can that their is huge variation in number of venues for each neighbourhood of Toronto.
+
+>![image.png](attachment:image.png)
+
+ - Converting venue category in numeric variable using One Hot Encoding( pandas dummy variables) and then grouping cateogry-wise total venues for each neighbourhood. Then this venue dataframe would be merged with crime dataset to get final dataframe ready for clustering and analysis.
 
 
 >![image.png](attachment:image.png)
 
 ### 3.2.2 New York
 
-1. Entire process from steps 1 to 8 is repeated for new York dataframe too beginning with getting venues using Foursquare.
+ - Entire process from steps 1 to 8 is repeated for new York dataframe too beginning with getting venues using Foursquare.
 
 >![image.png](attachment:image.png)
 
-2. Final grouped dataset of crime and category wise venues for New York Neighbourhoods
+- Final grouped dataset of crime and category wise venues for New York Neighbourhoods
 
 >![image.png](attachment:image.png)
 
-3. Plot the number of venues for each neighbourhood. We can that several neighbourhoods in New York have hit the ceiling of 100 popular venues per neighbourhood. 
+- Plot the number of venues for each neighbourhood. We can that several neighbourhoods in New York have hit the ceiling of 100 popular venues per neighbourhood. 
 
 >![image.png](attachment:image.png)
 
@@ -200,15 +200,15 @@ We can see that 101(401 - 300) columns were dropped from NYC dataset and 50 (290
 
 ### 3.3.1 Plotting distance matrices for Toronto and New York
 
-1. We define a custom function to plot distance matrix of Neighbourhood Observations using cdist() function in scipy.spatial.distance library and plot the resulting distance matrix using seaborn.heatmap(). Anohter subplot is plotted that shows the heatmap of distance matrix sorted along rows and columns
+- We define a custom function to plot distance matrix of Neighbourhood Observations using cdist() function in scipy.spatial.distance library and plot the resulting distance matrix using seaborn.heatmap(). Anohter subplot is plotted that shows the heatmap of distance matrix sorted along rows and columns
 
 >![image.png](attachment:image.png)
 
-2. Plotting Toronto dataset using plot_dist_matrix
+- Plotting Toronto dataset using plot_dist_matrix
 
 >![image.png](attachment:image.png)
 
-3. Plotting similar distance matrices for New York data
+- Plotting similar distance matrices for New York data
 
 >![image.png](attachment:image.png)
 
@@ -217,13 +217,13 @@ We can see that 101(401 - 300) columns were dropped from NYC dataset and 50 (290
 
 ### 3.3.2 Finding optimum value of n_cluster for kmeans algorithm
 
-1. Before using kmeans for clustering of similar neighbourhoods, we needs to find optimum number of clusters to get the best results. In order to find ideal number of clusters we need to run kmeans for varying range of clusters. For the purpose of this exercise, we use range of 2-15. We then define a custom function to plot silhouette scores for each test value of K. Note that features are scaled prior to clustering fit so that no features biases the distance matrix. 
+- Before using kmeans for clustering of similar neighbourhoods, we needs to find optimum number of clusters to get the best results. In order to find ideal number of clusters we need to run kmeans for varying range of clusters. For the purpose of this exercise, we use range of 2-15. We then define a custom function to plot silhouette scores for each test value of K. Note that features are scaled prior to clustering fit so that no features biases the distance matrix. 
 
 >![image.png](attachment:image.png)
 
 As per the graph of silhouette scores, any values cluster(K) in the range of 2-8 will give a good score. We choose kclusters to be 6 for clsuering of Toronto Neighbourhoods. 
 
-2. Same process of plotting silhouette scores was followed for finding optimum value of n_clusters for Kmeans for New York neighbourhoods. The resulting plot is
+- Same process of plotting silhouette scores was followed for finding optimum value of n_clusters for Kmeans for New York neighbourhoods. The resulting plot is
 
 >![image.png](attachment:image.png)
 
@@ -277,29 +277,29 @@ After clustering, the cluster labels were merged in New York neighbourhood datas
 
 ### 3.4.3 Compare Neighbourhoods between New York and Toronto
 
-1. In order to compare and find similar neighbourhoods between New York and Toronto, we ensure that both datasets have same column names ("Venue Category") so that the two dataframes can be joined together. Therefore we find the columns ( venue categories) in present in Toronto dataframe but not present in New York dataframe ( using numpy.setdiff1d function) and add the missing columns to new York dataframe. The new columns are initialized to 0(zero).  
+- In order to compare and find similar neighbourhoods between New York and Toronto, we ensure that both datasets have same column names ("Venue Category") so that the two dataframes can be joined together. Therefore we find the columns ( venue categories) in present in Toronto dataframe but not present in New York dataframe ( using numpy.setdiff1d function) and add the missing columns to new York dataframe. The new columns are initialized to 0(zero).  
 >![image.png](attachment:image.png)
 
-2. Same process was repeated for Toronto neighbourhood dataset too.
-
->![image.png](attachment:image.png)
-
-3. Some feature engineering was done. A column of city labels was added to each dtatset before conactenation. Also since latitudes and longitudes of both New York and Toronto are different ranges, centering of latitudes and longitudes of neighbourhoods in each dataset was done prior to concatenation. Centering was done by subtracting the lat/long of respective city from lat and long of each neighbourhood. Susequently sparse columns with less than two non-zero values were dropped.
+- Same process was repeated for Toronto neighbourhood dataset too.
 
 >![image.png](attachment:image.png)
 
-4. The final combined dataframe has a 212 rows and 326 columns.
+- Some feature engineering was done. A column of city labels was added to each dtatset before conactenation. Also since latitudes and longitudes of both New York and Toronto are different ranges, centering of latitudes and longitudes of neighbourhoods in each dataset was done prior to concatenation. Centering was done by subtracting the lat/long of respective city from lat and long of each neighbourhood. Susequently sparse columns with less than two non-zero values were dropped.
+
+>![image.png](attachment:image.png)
+
+- The final combined dataframe has a 212 rows and 326 columns.
 
 >![image.png](attachment:image.png)
 
 We can see that 36 sparse columns ( 362 -326) were dropped from the combined dataset.
 
-5. Silhouette analysis for combined dataframe was done using plot_silhouette custom function with test values of n_clusters from 2-30.
+- Silhouette analysis for combined dataframe was done using plot_silhouette custom function with test values of n_clusters from 2-30.
 >![image.png](attachment:image.png)
 
 We can see from the silhoutte score plot that for k ranging between 2-20 silhouette score remain roughly between 0.28 to 0.32. However, there is a sharp drop at k values of 8. We also know that best values of K for New York dataset ranged from 2-5 only. Hence, we decide to run KMeans clustering for combined dataframe with n_cluster value of 5 only.
 
-6. After KMeans clustering, cluster labels so obtained were merged with the combined dataframe and neighbourhoods were grouped according to cluster labels and city labels in to the follwing pivot table. IPython.html and Dataframe.style.set_properties() were used for pretty rendering of pivot table.
+- After KMeans clustering, cluster labels so obtained were merged with the combined dataframe and neighbourhoods were grouped according to cluster labels and city labels in to the follwing pivot table. IPython.html and Dataframe.style.set_properties() were used for pretty rendering of pivot table.
 
 <table id="T_d228baa2_f1ca_11e9_ac46_fcde56ff0106"><thead>    <tr>        <th class="index_name level0">City</th>        <th class="col_heading level0 col0">NYC</th>        <th class="col_heading level0 col1">Toronto</th>    </tr>    <tr>        <th class="index_name level0">Cluster Labels</th>        <th class="blank"></th>        <th class="blank"></th>    </tr></thead><tbody>
                 <tr>
@@ -534,7 +534,7 @@ Mimico</td>
             </tr>
     </tbody></table>
 
-7. We can see from the table above that clusters 2 and 3 have only one neighbourhood from New York and none from Toronto. In fact all neighbourhoods of Toronto except one have been grouped in cluster 4. This could be because neighbourhoods of Toronto were much tighly packed in n-dimensional feature space compared to neighbourhood distances ( in feature space) of New York. 
+- We can see from the table above that clusters 2 and 3 have only one neighbourhood from New York and none from Toronto. In fact all neighbourhoods of Toronto except one have been grouped in cluster 4. This could be because neighbourhoods of Toronto were much tighly packed in n-dimensional feature space compared to neighbourhood distances ( in feature space) of New York. 
 
 ### 3.4.4 Comparing various clustering algorithms on combined dataframe
 
@@ -555,7 +555,7 @@ The following algorithms were tried:-
 11. SpectralBiclustering
 12. SpectralCoclustering
 
-The final pivot table output containing number of neighbourhoods in each cluster for two cities for each algorithm is displayed below.  
+**The final pivot table output containing number of neighbourhoods in each cluster for two cities for each algorithm is displayed below.**  
 
 <div class="output_wrapper"><div class="out_prompt_overlay prompt" title="click to scroll output; double click to hide" style=""></div><div class="output" style=""><div class="output_area"><div class="run_this_cell"></div><div class="prompt"></div><div class="output_subarea output_text output_stream output_stdout"><pre>RunningMiniBatchKMeans(batch_size=100, compute_labels=True, init='k-means++',
                 init_size=None, max_iter=100, max_no_improvement=10,
@@ -1223,36 +1223,14 @@ On comparing the summary tables of clustering done by various algorithms, we can
 
 **However, SpectralClustering produces the most granular clustering with all the clusters containing some neighbourhoods of both cities New York and Toronto. The results of SpectralClustering are repoduced below.**
 
-</tbody></table></div></div><div class="output_area"><div class="run_this_cell"></div><div class="prompt"></div><div class="output_subarea output_text output_stream output_stdout"><pre>RunningSpectralClustering(affinity='nearest_neighbors', assign_labels='kmeans',
-                   coef0=1, degree=3, eigen_solver='arpack', eigen_tol=0.0,
-                   gamma=1.0, kernel_params=None, n_clusters=5, n_init=10,
-                   n_jobs=None, n_neighbors=10, random_state=None)
-</pre></div></div><div class="output_area"><div class="run_this_cell"></div><div class="prompt"></div><div class="output_subarea output_html rendered_html"><table id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106"><thead>    <tr>        <th class="index_name level0">City</th>        <th class="col_heading level0 col0">NYC</th>        <th class="col_heading level0 col1">Toronto</th>    </tr>    <tr>        <th class="index_name level0">Cluster Labels</th>        <th class="blank"></th>        <th class="blank"></th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106level0_row0" class="row_heading level0 row0">0</th>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row0_col0" class="data row0 col0">7</td>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row0_col1" class="data row0 col1">9</td>
-            </tr>
-            <tr>
-                        <th id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106level0_row1" class="row_heading level0 row1">1</th>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row1_col0" class="data row1 col0">15</td>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row1_col1" class="data row1 col1">7</td>
-            </tr>
-            <tr>
-                        <th id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106level0_row2" class="row_heading level0 row2">2</th>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row2_col0" class="data row2 col0">24</td>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row2_col1" class="data row2 col1">59</td>
-            </tr>
-            <tr>
-                        <th id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106level0_row3" class="row_heading level0 row3">3</th>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row3_col0" class="data row3 col0">28</td>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row3_col1" class="data row3 col1">52</td>
-            </tr>
-            <tr>
-                        <th id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106level0_row4" class="row_heading level0 row4">4</th>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row4_col0" class="data row4 col0">2</td>
-                        <td id="T_7d25e42d_f1cb_11e9_ac46_fcde56ff0106row4_col1" class="data row4 col1">9</td>
-            </tr>
+
+|Cluster Labels|NYC|Toronto|
+|--------------|---|-------|
+|**0**|7|9|
+|**1**|15|7|
+|**2**|24|59|
+|**3**|28|52|
+|**4**|2|9|
 
 ### 3.4.5 Inductive Clustering
 
@@ -1273,14 +1251,14 @@ On comparing the summary tables of clustering done by various algorithms, we can
     - **cosine** distance works because it is invariant to global scalings of the signal
     - **compute_full_tree** was forced as True. This is because the documentation for AgglomerativeClustering says when varying the number of clusters and using caching, it may be advantageous to compute the full tree.
 
->![image.png](attachment:image.png)
+5. The cluster labels generated by Inductive Clustering were merged with combined dataframe. With Dataframe.groupby(), aggregate() and unstack() methods, a pivot table was generated classifying all the neighbourhoods of New York and Toronto. 
 
-5. The cluster labels generated by Inductive Clustering were merged with combined dataframe. With Dataframe.groupby(), aggregate() and unstack() methods, a pivot table was generated classifying all the neighbourhoods of New York and Toronto.   
+>![image.png](attachment:image.png)
 
 
 # 4. Results
 
-**1. The final pivot table displaying the clustering of neighbourhoods between New York and Toronto can be seen below.**
+**The final pivot table displaying the clustering of neighbourhoods between New York and Toronto can be seen below.**
 
 
 <table id="T_3e78299a_f2b1_11e9_ac46_fcde56ff0106"><thead>    <tr>        <th class="index_name level0">City</th>        <th class="col_heading level0 col0">NYC</th>        <th class="col_heading level0 col1">Toronto</th>    </tr>    <tr>        <th class="index_name level0">Cluster Labels</th>        <th class="blank"></th>        <th class="blank"></th>    </tr></thead><tbody>
@@ -1515,11 +1493,11 @@ Malvern</td>
             </tr>
     </tbody></table>
 
-**2. For interpreting the different cluster labels, seaborn library's catplot function was used to produce a barplot for each Crime_type and City. Results can be seen below**
+**For interpreting the different cluster labels, seaborn library's catplot function was used to produce a barplot for each Crime_type and City. Results can be seen below**
 
 >![image.png](attachment:image.png)
 
-**3. On the basis of crime rates, clusters can be categorized as follows:-**
+**On the basis of crime rates, clusters can be categorized as follows:-**
     
    - Cluster 3 - Very High Crime Rate
    - Cluster 1 - High Crime Rate
@@ -1527,25 +1505,25 @@ Malvern</td>
    - Cluster 4 - Low Crime Rate
    - Cluster 0 - Very Low Crime Rate
 
-**4. In order to categorize clusters on the basis of venues categories, following approach was used:-**
+**In order to categorize clusters on the basis of venues categories, following approach was used:-**
 
-    - Fetch full category list from Foursquare using request.get() on this <a href='https://api.foursquare.com/v2/venues/categories'>url</a>
+   - Fetch full category list from Foursquare using request.get() on this <a href='https://api.foursquare.com/v2/venues/categories'>url</a>
     
-    - Full category list has 10 master venue categories under which all venue categories are classified.
-        - Arts & Entertainment
-        - College & University
-        - Event
-        - Food
-        - Nightlife Spot
-        - Outdoors & Recreation
-        - Professional & Other Places
-        - Residence
-        - Shop & Service
-        - Travel & Transport
-    - Create a dictionary of Venue Categories mapped to Master Category using a custom function
-    >![image.png](attachment:image.png)
+   - Full category list has 10 master venue categories under which all venue categories are classified.
+       - Arts & Entertainment
+       - College & University
+       - Event
+       - Food
+       - Nightlife Spot
+       - Outdoors & Recreation
+       - Professional & Other Places
+       - Residence
+       - Shop & Service
+       - Travel & Transport
+   - Create a dictionary of Venue Categories mapped to Master Category using a custom function
+    ![image.png](attachment:image.png)
     
-    - Use groupby on columns of combined Dataframe to condense all venue categories columns into 10 master category columns
+   - Use groupby on columns of combined Dataframe to condense all venue categories columns into 10 master category columns
     - Use Seaborn.catplot() function to plot a Boxplot of distribution of various venue master categories within each cluster and city.
     
 
@@ -1553,7 +1531,7 @@ Malvern</td>
 
 >![image.png](attachment:image.png)
 
-**5. On the basis of analysis of above plots, clusters can be categorized in terms of venue types as follows:-**
+**On the basis of analysis of above plots, clusters can be categorized in terms of venue types as follows:-**
 
 |Cluster Number | Category by Venue | Category by Crime        |
 |---------------|-------------------|--------------------------|
@@ -1565,8 +1543,50 @@ Malvern</td>
     
 
 
-# 5. Discussion (Observations and Recommendations)
+# 5. Discussion 
+
+## 5.1 Observations
+
+- Both cities New York and Toronto have a lot of differences as far as crime data and venues data is concerned. While most neighbourhoods in New York have more than 100 popular venues within 500m radius, few neighbourhoods in Toronto have as many popular venues.
+
+- On analysis of the distance matrices (sorted and unsorted) of neighbourhoods in n-dimensional feature space, it was seen that neighbourhoods in New York have high disssimilarity while neighbourhoods in Toronto are highly similar and tightly packed in feature space.
+
+- Analysis of silhuette scores of Toronto dataset revealed reasonable clustering success with silhuette scores ranging from 0.3-0.35. However, silhuette scores for new York dataset were quite low ( ~ 0.1) implying poor clustering in feature space.
+
+- During the clustering of combined dataset of Toronto and New York for finding similar neighbourhoods between the two cities, it was observed that KMeans didn't perform very satisfactorily. 135 out of 136 neighbourhoods of Toronto were clubbed into single cluster. 
+
+- Comparison of various clustering algorithms on combined dataset revealed similar bunching of most of Toronto neighbourhoods into one cluster of New York neighbourhoods. Only SpectralClustering algorithm created reasonable spread of Toronto neighbourhoods into all clusters.
+
+- Run of Inductive Clustering method with use of AgglomerativeClustering to first cluster NYC neighbourhoods and then using KneighboursClassifier to predict cluster labels for Toronto resulted into much better results.
+
+- Analysis of barplots of crime data across cluster and cities revealed different rates of crimes between clusters. Further, in every cluster, crime rates of Toronto neighbourhoods were significantly lower than New York neighbourhoods.
+
+- Analysis of boxplots of Venue Master categories across cluster and cities revealed prominence of 2-3 differenct categories for each cluster. On the basis of this classification, prominent characterstics of each cluster were identified.  
+
+
+## 5.2 Recommendations
+
+- Cluster 0 is the best cluster as far as crime rates are concerned. The neighbourhoods in this cluster are :-
+
+|NYC                                       |Toronto                 |Crime Pattern   |Venue Types|
+|------------------------------------------|------------------------|----------------|-----------|
+|2824 W 17th St, Brooklyn, NY 11224        |Stonegate-Queensway     |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation|
+|Gulf Ave, Staten Island, NY 10314         |Keelesdale-Eglinton West|Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+|391 Fairbanks Ave, Staten Island, NY 10306|Casa Loma               |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+|170 Sharrotts Ln, Staten Island, NY 10309 |High Park-Swansea       |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+|                                          | Downsview-Roding-CFB   |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+|                                          | Willowdale West        |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+|                                          | Don Valley Village     |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+|                                          | Woodbine Corridor      |Very Low        |Arts & Entertainment,Professional & Other Places,Outdoors & Recreation
+
+- More features like population, property rents/prices, traffic congestion data, pollution data, etc. may be used to get better comparison and clustering results.
+
+- Instead of dropping columns with too many zero, feature engineering to transform the data of such columns may be explored so that no data is lost.
+
+- Other statistics like Minimum Spanning Tree and use of different metrics with different algorithms using a range of parameters may be explored to locate the best clustering strategy.  
 
 # 6. Conclusion
+
+In this project, we compared neighbourhoods of New York and Toronto using crime data for last years and types of popular venues present in the vicinity of each neighbourhood. It involved data retrieval from openly available public datasets as well as scraping venues data from Foursquare and geocoding through free geocoders. Further, a lot of data cleaning, feature engineering was required before data could be used for machine learning. We found that neighbourhoods in Toronto are much more similar to each other while neighbourhoods in New York are quite dissimilar. We also compared the performance of various clustering algorithms on combined dataset of New York and Toronto and found that SpectralClustering algorithm gave the best results. We also established that InductiveClustering gave good clustering results comparable to SpectralClustering. we further identified the defining characterstics of each cluster on the basis of cluster-wise crime rates and venue types present in cluster. On the basis of above analysis, we established 4 neighbourhoods of New York and Toronto that are similar to each other with lowest crime rates and having popular venues of various categories like Arts & Entertainment,Professional & Other Places,Outdoors & Recreation. We also identified scope for further exploration and refining of data and clustering strategies that may improve the result.
 
 ### Thank you for going through my notebook.
